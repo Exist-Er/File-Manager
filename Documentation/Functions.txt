@@ -1,0 +1,63 @@
+Core Functionalities
+
+  File & Folder Operations:
+    Create file/folder
+    Delete file/folder
+    Rename
+    Copy / Move (cut-paste)
+    Open files
+  
+  Directory Navigation:
+    Browse folders (tree view or list)
+    Show current path
+    Go back / forward
+    Open parent directory
+  
+  File Details:
+    Name
+    Size
+    Type
+    Last modified date
+  
+  Search:
+    Search files by name
+    Filter by type (e.g., .txt, .jpg)
+
+
+Intermediate Functionalities
+
+  Favorites / Bookmarks
+    Add/remove favorite folders
+    Quick access panel
+
+  Recent Files
+    Track recently opened files
+    Display history
+
+  Background Operations (Multithreading)
+    Copy/move files in background
+    Show progress
+
+  Multiple Tabs
+
+  Advanced Search
+    Search by:
+    File size
+    Date modified
+
+
+🚀 Advanced Functionalities (HIGH MARKS)
+
+These will separate you from others
+
+👁️ File Preview Panel
+Preview text files
+Show image thumbnails
+🗜️ File Compression
+Zip / unzip files
+🔄 Undo / Redo
+Undo delete or move operations
+🔐 Permissions / Access Control
+Restrict file access (basic simulation is fine)
+📡 Auto Refresh (Watcher)
+Detect changes in folder automatically
