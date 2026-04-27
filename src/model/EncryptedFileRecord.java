@@ -1,4 +1,4 @@
-package db;
+package model;
 
 /**
  * EncryptedFileRecord — Plain Data Object (no logic)

@@ -2,6 +2,7 @@ package db;
 
 import java.util.List;
 import java.util.Optional;
+import model.EncryptedFileRecord;
 
 /**
  * DBTest — Run this to verify your entire db package works.
