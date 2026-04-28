@@ -7,8 +7,6 @@ import javax.swing.ImageIcon;
 
 public class FolderItem extends FileItem {
 
-  // Callback so FolderItem can trigger navigation
-  // without importing from the service layer
   private final Consumer<Path> onNavigate;
 
   public FolderItem(Path path, long size, LocalDateTime lastModified, Consumer<Path> onNavigate) {

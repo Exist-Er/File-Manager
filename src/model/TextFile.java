@@ -12,9 +12,11 @@ public class TextFile extends FileItem {
 
   @Override
   public void open() {
-    // UI layer (PreviewPanel) will call this via polymorphism.
-    // For now, stub — your teammate wires the actual panel.
-    System.out.println("Opening text viewer for: " + getName());
+    try {
+      java.awt.Desktop.getDesktop().open(getPath().toFile());
+    } catch (java.io.IOException e) {
+      System.err.println("Could not open text file: " + e.getMessage());
+    }
   }
 
   @Override

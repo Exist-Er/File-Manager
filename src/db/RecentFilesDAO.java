@@ -29,17 +29,19 @@ public class RecentFilesDAO {
 
     public RecentFilesDAO() {
         this.conn = DatabaseManager.getInstance().getConnection();
+        ensureUniqueConstraint();
     }
 
+    private void ensureUniqueConstraint() {
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_recent_files_path ON recent_files(path)");
+        } catch (SQLException e) {
+            System.err.println("[RecentFilesDAO] Migration error: " + e.getMessage());
+        }
+    }
 
-    /**
-     * Records that a file was just opened.
-     * After inserting, trims the table so it never exceeds 50 rows.
-     *
-     * @param path  absolute path of the opened file
-     */
     public void insert(String path) {
-        String sql = "INSERT INTO recent_files (path) VALUES (?)";
+        String sql = "INSERT OR REPLACE INTO recent_files (path, opened_at) VALUES (?, CURRENT_TIMESTAMP)";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, path);
@@ -50,15 +52,9 @@ public class RecentFilesDAO {
         }
     }
 
-    /**
-     * Returns the 10 most recently opened file paths, newest first.
-     * Used by SidebarPanel to populate the "Recent" list.
-     *
-     * @return list of paths (may be empty, never null)
-     */
     public List<String> fetchTop10() {
         List<String> list = new ArrayList<>();
-        String sql = "SELECT path FROM recent_files ORDER BY id DESC LIMIT 10";
+        String sql = "SELECT path FROM recent_files ORDER BY opened_at DESC, id DESC LIMIT 10";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -73,10 +69,6 @@ public class RecentFilesDAO {
         return list;
     }
 
-    /**
-     * Deletes every row from recent_files.
-     * Triggered by a "Clear History" action in the UI.
-     */
     public void clearAll() {
         try (Statement stmt = conn.createStatement()) {
             stmt.execute("DELETE FROM recent_files");
@@ -86,10 +78,6 @@ public class RecentFilesDAO {
         }
     }
 
-    /**
-     * Keeps only the 50 newest rows.
-     * Called automatically after every insert — caller never needs to invoke this.
-     */
     private void trimOld() {
         String sql = """
                 DELETE FROM recent_files

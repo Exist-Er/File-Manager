@@ -16,11 +16,6 @@ public class EncryptedFileRecord {
     private final byte[] wrappedAesKey;
     private final byte[] iv;
 
-    /**
-     * @param filePath       absolute path of the encrypted file
-     * @param wrappedAesKey  RSA-OAEP wrapped AES key bytes
-     * @param iv             12-byte GCM nonce bytes
-     */
     public EncryptedFileRecord(String filePath, byte[] wrappedAesKey, byte[] iv) {
         this.filePath      = filePath;
         this.wrappedAesKey = wrappedAesKey;

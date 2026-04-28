@@ -9,7 +9,7 @@ This project is a Java-based File Explorer application that features hybrid encr
 - **Persistence:** DAO (Data Access Object) pattern for database operations.
 
 ## Architecture & Structure
-The project is organized into several packages (some currently acting as placeholders):
+The project is organized into several packages:
 - `db`: Contains the database management logic, schema, DAOs, and database tests.
   - `DatabaseManager.java`: Singleton managing the SQLite connection and schema initialization.
   - `EncryptedFileDAO.java`: Manages storage and retrieval of RSA-wrapped AES keys and IVs.
@@ -17,11 +17,11 @@ The project is organized into several packages (some currently acting as placeho
   - `FavoritesDAO.java`: Manages user-bookmarked paths.
   - `schema.sql`: Defines the SQLite table structure.
   - `DBTest.java`: A standalone test suite for verifying the `db` package.
-- `model`: (Placeholder) For data models like `EncryptedFileRecord`.
-- `operations`: (Placeholder) For core file operations.
-- `service`: (Placeholder) For high-level application logic (e.g., `FileExplorerService`).
-- `threading`: (Placeholder) For background task management.
-- `ui`: (Placeholder) For the Swing/JavaFX user interface components.
+- `model`: Data models (e.g., `EncryptedFileRecord`, `FileItem` hierarchy).
+- `operations`: Core file operations (e.g., Copy, Move, Delete, Zip).
+- `services`: High-level application logic (e.g., `FileExplorerService`).
+- `threading`: Background task management using `ThreadPoolManager` and `SwingWorker`.
+- `ui`: Swing user interface components (`ModernFileManagerUI.java`).
 
 ## Building and Running
 
@@ -34,11 +34,11 @@ The project is organized into several packages (some currently acting as placeho
   Execute the `db.DBTest` class. Ensure the SQLite JDBC driver is on your classpath.
   ```bash
   # Example (adjust classpath as needed)
-  javac -d bin src/db/*.java
+  javac -d bin src/db/*.java src/model/EncryptedFileRecord.java src/services/*.java src/threading/*.java src/operations/*.java
   java -cp bin:lib/sqlite-jdbc.jar db.DBTest
   ```
 - **Build Project:**
-  TODO: Document build system (Maven/Gradle) once configured. Currently, the project structure suggests a standard Java source layout.
+  TODO: Document build system (Maven/Gradle) once configured.
 
 ## Development Conventions
 - **Database:** All database interactions should go through `DatabaseManager.getInstance().getConnection()`.

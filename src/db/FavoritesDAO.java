@@ -28,16 +28,6 @@ public class FavoritesDAO {
         this.conn = DatabaseManager.getInstance().getConnection();
     }
 
-    // -------------------------------------------------------------------- add
-
-    /**
-     * Bookmarks a path with a display name.
-     * INSERT OR IGNORE means calling this twice for the same path is safe —
-     * no duplicate, no exception.
-     *
-     * @param path  absolute path of the folder or file
-     * @param name  label to show in the sidebar (e.g. "Projects")
-     */
     public void add(String path, String name) {
         String sql = "INSERT OR IGNORE INTO favorites (path, name) VALUES (?, ?)";
 
@@ -56,12 +46,6 @@ public class FavoritesDAO {
         }
     }
 
-    /**
-     * Removes a bookmark by its path.
-     * Safe to call even if the path is not in the table.
-     *
-     * @param path  exact path that was used when add() was called
-     */
     public void remove(String path) {
         String sql = "DELETE FROM favorites WHERE path = ?";
 
@@ -74,13 +58,6 @@ public class FavoritesDAO {
         }
     }
 
-    /**
-     * Returns all bookmarks sorted alphabetically by name.
-     * Each entry is a String array: [0] = path, [1] = name.
-     * Used by SidebarPanel to build the favorites list.
-     *
-     * @return list of {path, name} pairs (may be empty, never null)
-     */
     public List<String[]> getAll() {
         List<String[]> list = new ArrayList<>();
         String sql = "SELECT path, name FROM favorites ORDER BY name ASC";
@@ -101,13 +78,6 @@ public class FavoritesDAO {
         return list;
     }
 
-    /**
-     * Checks whether a path is already bookmarked.
-     * Used by the UI to toggle the star icon (filled = favorite).
-     *
-     * @param path  path to check
-     * @return true if the path exists in the favorites table
-     */
     public boolean isFavorite(String path) {
         String sql = "SELECT COUNT(*) FROM favorites WHERE path = ?";
 

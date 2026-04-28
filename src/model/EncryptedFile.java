@@ -13,7 +13,7 @@ public class EncryptedFile extends FileItem {
 
   @Override
   public void open() {
-    // UI layer or FileExplorerService will handle decryption before opening
+
     System.out.println("File is encrypted. Decryption required for: " + getName());
   }
 

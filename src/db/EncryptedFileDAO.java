@@ -31,20 +31,6 @@ public class EncryptedFileDAO {
         this.conn = DatabaseManager.getInstance().getConnection();
     }
 
-    /**
-     * Saves the encryption metadata for a file.
-     *
-     * INSERT OR REPLACE means:
-     *   - First time encrypting  → inserts a new row
-     *   - Re-encrypting same file → replaces the old row (fresh key + IV)
-     *
-     * IMPORTANT: wrappedAesKey and iv are raw bytes — stored as BLOB.
-     * Never convert them to String — byte data will be corrupted.
-     *
-     * @param filePath       absolute path of the encrypted file on disk
-     * @param wrappedAesKey  RSA-OAEP encrypted AES key (byte array)
-     * @param iv             12-byte AES-GCM nonce (byte array)
-     */
     public void insert(String filePath, byte[] wrappedAesKey, byte[] iv) {
         String sql = """
                 INSERT OR REPLACE INTO encrypted_files
@@ -54,8 +40,8 @@ public class EncryptedFileDAO {
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, filePath);
-            ps.setBytes (2, wrappedAesKey);   // BLOB — setBytes, NOT setString
-            ps.setBytes (3, iv);              // BLOB — setBytes, NOT setString
+            ps.setBytes (2, wrappedAesKey);
+            ps.setBytes (3, iv);
             ps.executeUpdate();
 
             System.out.println("[EncryptedFileDAO] Saved key for: " + filePath);
@@ -64,21 +50,6 @@ public class EncryptedFileDAO {
         }
     }
 
-    /**
-     * Fetches the encryption record for a given file path.
-     *
-     * Returns Optional.empty() if:
-     *   - The file was never encrypted via this app
-     *   - The record was already deleted after decryption
-     *
-     * The decryption flow:
-     *   1. Call findByPath(path) → get EncryptedFileRecord
-     *   2. Pass record.getWrappedAesKey() and record.getIv() to HybridDecryptor
-     *   3. After successful decryption call delete(path)
-     *
-     * @param filePath  absolute path to look up
-     * @return Optional containing the record, or Optional.empty()
-     */
     public Optional<EncryptedFileRecord> findByPath(String filePath) {
         String sql = """
                 SELECT file_path, wrapped_aes_key, iv
@@ -93,8 +64,8 @@ public class EncryptedFileDAO {
                 if (rs.next()) {
                     return Optional.of(new EncryptedFileRecord(
                             rs.getString("file_path"),
-                            rs.getBytes ("wrapped_aes_key"),  // BLOB → byte[]
-                            rs.getBytes ("iv")                // BLOB → byte[]
+                            rs.getBytes ("wrapped_aes_key"),
+                            rs.getBytes ("iv")
                     ));
                 }
             }
@@ -105,12 +76,6 @@ public class EncryptedFileDAO {
         return Optional.empty();
     }
 
-    /**
-     * Removes the encryption record after a file has been successfully decrypted.
-     * Safe to call even if the path does not exist in the table.
-     *
-     * @param filePath  path whose record should be deleted
-     */
     public void delete(String filePath) {
         String sql = "DELETE FROM encrypted_files WHERE file_path = ?";
 
@@ -123,13 +88,18 @@ public class EncryptedFileDAO {
         }
     }
 
-    /**
-     * Checks whether a file currently has an active encryption record.
-     * Used by FileListPanel to show a lock icon overlay on encrypted files.
-     *
-     * @param filePath  path to check
-     * @return true if a record exists for this path
-     */
+    public void updatePath(String oldPath, String newPath) {
+        String sql = "UPDATE encrypted_files SET file_path = ? WHERE file_path = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newPath);
+            ps.setString(2, oldPath);
+            ps.executeUpdate();
+            System.out.println("[EncryptedFileDAO] Path updated: " + oldPath + " -> " + newPath);
+        } catch (SQLException e) {
+            System.err.println("[EncryptedFileDAO] updatePath error: " + e.getMessage());
+        }
+    }
+
     public boolean isEncrypted(String filePath) {
         String sql = "SELECT COUNT(*) FROM encrypted_files WHERE file_path = ?";
 

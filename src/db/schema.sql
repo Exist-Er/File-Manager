@@ -12,7 +12,7 @@
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS recent_files (
     id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    path      TEXT    NOT NULL,
+    path      TEXT    NOT NULL UNIQUE,
     opened_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
